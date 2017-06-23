@@ -1,18 +1,40 @@
 import React, { Component } from 'react';
+import RandomJokesList from './view/RandomJokesList';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+class ChuckNorrisApp extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            addFavouriteJoke: false,
+            removeFavouriteJoke: false
+        };
+
+        this.favouriteJokes = new Map();
+
+        this.handleAddToFavourites = this.handleAddToFavourites.bind(this);
+        this.handleRemoveFromFavourites = this.handleRemoveFromFavourites.bind(this);
+    }
+
+    handleAddToFavourites(joke) {
+        alert('Todo - Add favourite joke!');
+    }
+
+    handleRemoveFromFavourites(joke) {
+        alert('Todo - Remove favourite joke!');
+    }
+
+    render() {
+        return (
+            <div className="randomJokes">
+                <RandomJokesList
+                    favouriteJokes={this.favouriteJokes}
+                    handleAddToFavourites={this.handleAddToFavourites}
+                    addFavouriteJoke={this.state.addFavouriteJoke}
+                    removeFavouriteJoke={this.state.removeFavouriteJoke}
+                />
+            </div>
+        );
+    }
 }
 
-export default App;
+export default ChuckNorrisApp;
