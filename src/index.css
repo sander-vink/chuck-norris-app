@@ -1,5 +1,21 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+    font-family: arial,sans-serif;
+    font-size: 10pt;
+    margin: auto;
+    max-width: 800px;
+    padding: 0;
+}
+
+button.add-favourite-joke,
+button.remove-favourite-joke {
+    display: block;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    padding-bottom: 5px;
 }

@@ -15,6 +15,7 @@ class LoadRandomJokesForm extends Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
+                <p>Press the button to load new random jokes.</p>
                 <input type="submit" value="Show 10 random jokes" />
             </form>
         );
