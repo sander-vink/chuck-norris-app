@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import FavouriteJokesList from './view/FavouriteJokesList';
 import RandomJokesList from './view/RandomJokesList';
 
 class ChuckNorrisApp extends Component {
@@ -55,12 +56,16 @@ class ChuckNorrisApp extends Component {
 
     render() {
         return (
-            <div className="randomJokes">
+            <div>
                 <RandomJokesList
                     favouriteJokes={this.favouriteJokes}
                     handleAddToFavourites={this.handleAddToFavourites}
                     addFavouriteJoke={this.state.addFavouriteJoke}
                     removeFavouriteJoke={this.state.removeFavouriteJoke}
+                />
+                <FavouriteJokesList
+                    favouriteJokes={this.favouriteJokes}
+                    handleRemoveFromFavourites={this.handleRemoveFromFavourites}
                 />
             </div>
         );

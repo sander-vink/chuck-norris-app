@@ -66,7 +66,7 @@ class RandomJokesList extends Component {
         }
 
         return (
-            <div>
+            <div className="random-jokes-list">
                 <LoadRandomJokesForm
                     handleRequestForRandomJokes={this.handleRequestForRandomJokes}
                 />
