@@ -13,7 +13,6 @@ class RandomJokesList extends Component {
 
         this.getRandomJokesFromApi = this.getRandomJokesFromApi.bind(this);
         this.handleRequestForRandomJokes = this.handleRequestForRandomJokes.bind(this);
-        this.render = this.render.bind(this);
     }
 
     getRandomJokesFromApi() {

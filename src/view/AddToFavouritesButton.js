@@ -5,7 +5,6 @@ class AddToFavouritesButton extends Component {
         super(props);
 
         this.handleOnClick = this.handleOnClick.bind(this);
-        this.render = this.render.bind(this);
     }
 
     handleOnClick(event) {
