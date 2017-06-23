@@ -12,7 +12,7 @@ class ChuckNorrisApp extends Component {
 
         this.favouriteJokes = new Map();
         this.localStorageKey = 'myFavouriteChuckNorrisJokes';
-        this.maximumFavouriteJokesAllowed = 3;
+        this.maximumFavouriteJokesAllowed = 10;
 
         // Check for locally stored favourite jokes
         if (localStorage.getItem(this.localStorageKey)) {
