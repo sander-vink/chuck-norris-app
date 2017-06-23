@@ -7,20 +7,52 @@ class ChuckNorrisApp extends Component {
         super(props);
         this.state = {
             addFavouriteJoke: false,
-            removeFavouriteJoke: false
+            removeFavouriteJoke: false,
+            randomJokes: false
         };
 
         this.favouriteJokes = new Map();
-        this.localStorageKey = 'myFavouriteChuckNorrisJokes';
+        this.randomJokes = new Map();
         this.maximumFavouriteJokesAllowed = 10;
 
+
         // Check for locally stored favourite jokes
+        this.localStorageKey = 'myFavouriteChuckNorrisJokes';
         if (localStorage.getItem(this.localStorageKey)) {
             this.favouriteJokes = new Map(JSON.parse(localStorage.getItem(this.localStorageKey)));
         }
 
+        this.getRandomJokesFromApi = this.getRandomJokesFromApi.bind(this);
         this.handleAddToFavourites = this.handleAddToFavourites.bind(this);
         this.handleRemoveFromFavourites = this.handleRemoveFromFavourites.bind(this);
+    }
+
+    getRandomJokesFromApi() {
+        const favouriteJokes = this.favouriteJokes;
+        const randomJokesApiUrl = 'http://api.icndb.com/jokes/random/10?escape=javascript';
+
+        return fetch(randomJokesApiUrl)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                let jokes = new Map();
+                responseJson.value.forEach(function(joke) {
+                    let isFavourite = false;
+                    if (favouriteJokes.get(joke.id)) {
+                        isFavourite = true;
+                    }
+                    jokes.set(joke.id, {
+                        id: joke.id,
+                        text: joke.joke,
+                        isFavourite: isFavourite
+                    });
+                });
+                this.setState({
+                    randomJokes: jokes
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     handleAddToFavourites(joke) {
@@ -30,8 +62,10 @@ class ChuckNorrisApp extends Component {
             return;
         }
 
-        // Mark the joke as favourite, and save it to local storage
+        // Set new favourite flag (to update current lists)
         joke.isFavourite = true;
+
+        // Now save it to local storage
         this.favouriteJokes.set(joke.id, joke);
         localStorage.setItem(this.localStorageKey, JSON.stringify(Array.from(this.favouriteJokes.entries())));
 
@@ -43,7 +77,10 @@ class ChuckNorrisApp extends Component {
     }
 
     handleRemoveFromFavourites(joke) {
-        // This joke is no longer a favourite, and should be removed from local storage
+        // Set new favourite flag (to update current lists)
+        joke.isFavourite = false;
+
+        // Now remove it from local storage
         this.favouriteJokes.delete(joke.id);
         localStorage.setItem(this.localStorageKey, JSON.stringify(Array.from(this.favouriteJokes.entries())));
 
@@ -55,10 +92,16 @@ class ChuckNorrisApp extends Component {
     }
 
     render() {
+        if (this.state.randomJokes !== false) {
+            this.randomJokes = this.state.randomJokes;
+        }
+
         return (
             <div>
                 <RandomJokesList
+                    jokes={this.randomJokes}
                     favouriteJokes={this.favouriteJokes}
+                    getRandomJokesFromApi={this.getRandomJokesFromApi}
                     handleAddToFavourites={this.handleAddToFavourites}
                     addFavouriteJoke={this.state.addFavouriteJoke}
                     removeFavouriteJoke={this.state.removeFavouriteJoke}
