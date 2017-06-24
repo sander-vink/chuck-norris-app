@@ -22,9 +22,42 @@ class ChuckNorrisApp extends Component {
             this.favouriteJokes = new Map(JSON.parse(localStorage.getItem(this.localStorageKey)));
         }
 
+        this.addFavouriteJokeFromApi = this.addFavouriteJokeFromApi.bind(this);
         this.getRandomJokesFromApi = this.getRandomJokesFromApi.bind(this);
         this.handleAddToFavourites = this.handleAddToFavourites.bind(this);
         this.handleRemoveFromFavourites = this.handleRemoveFromFavourites.bind(this);
+        this.handleRequestToPopulateFavourites = this.handleRequestToPopulateFavourites.bind(this);
+    }
+
+    addFavouriteJokeFromApi() {
+        // Clear the interval when the limit is reached
+        if (this.favouriteJokes.size >= this.maximumFavouriteJokesAllowed && this.addRandomJokeInterval) {
+            clearInterval(this.addRandomJokeInterval);
+            this.addRandomJokeInterval = false;
+            return;
+        }
+
+        const favouriteJokes = this.favouriteJokes;
+        const randomJokeApiUrl = 'http://api.icndb.com/jokes/random/1?escape=javascript';
+
+        return fetch(randomJokeApiUrl)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                const randomJoke = responseJson.value[0];
+                // If this joke is already a favourite joke, try again
+                if (favouriteJokes.get(randomJoke.id)) {
+                    this.addFavouriteJokeFromApi();
+                    return;
+                }
+                this.handleAddToFavourites({
+                    id: randomJoke.id,
+                    text: randomJoke.joke,
+                    isFavourite: true
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     getRandomJokesFromApi() {
@@ -91,6 +124,31 @@ class ChuckNorrisApp extends Component {
         });
     }
 
+    handleRequestToPopulateFavourites() {
+        // Show a message when the limit is reached
+        if (this.favouriteJokes.size >= this.maximumFavouriteJokesAllowed) {
+            alert(`You have already reached the maximum of ${this.maximumFavouriteJokesAllowed} favourite jokes!`);
+            return;
+        }
+
+        // If this request is done, and the timer is already running, stop the timer
+        if (this.addRandomJokeInterval) {
+            clearInterval(this.addRandomJokeInterval);
+            this.addRandomJokeInterval = false;
+            alert('You have manually stopped populating the favourite jokes list.');
+            return;
+        }
+
+        // Initially add a single joke
+        this.addFavouriteJokeFromApi();
+
+        // Now start the interval to add another one after 5 seconds
+        this.addRandomJokeInterval = setInterval(
+            () => this.addFavouriteJokeFromApi(),
+            5000
+        );
+    }
+
     render() {
         if (this.state.randomJokes !== false) {
             this.randomJokes = this.state.randomJokes;
@@ -106,9 +164,11 @@ class ChuckNorrisApp extends Component {
                     addFavouriteJoke={this.state.addFavouriteJoke}
                     removeFavouriteJoke={this.state.removeFavouriteJoke}
                 />
+                <hr />
                 <FavouriteJokesList
                     favouriteJokes={this.favouriteJokes}
                     handleRemoveFromFavourites={this.handleRemoveFromFavourites}
+                    handleRequestToPopulateFavourites={this.handleRequestToPopulateFavourites}
                 />
             </div>
         );
